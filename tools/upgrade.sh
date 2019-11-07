@@ -27,35 +27,25 @@ git config core.autocrlf false
 git config fsck.zeroPaddedFilemode ignore
 git config fetch.fsck.zeroPaddedFilemode ignore
 git config receive.fsck.zeroPaddedFilemode ignore
-# autostash on rebase (#7172)
-resetAutoStash=$(git config --bool rebase.autoStash 2>&1)
-git config rebase.autoStash true
 
-# Update upstream remote to ohmyzsh org
-remote=$(git remote -v | awk '/https:\/\/github\.com\/robbyrussell\/oh-my-zsh\.git/{ print $1; exit }')
-if [ -n "$remote" ]; then
-  git remote set-url "$remote" "https://github.com/ohmyzsh/ohmyzsh.git"
-fi
-
-printf "${BLUE}%s${NORMAL}\n" "Updating Oh My Zsh"
-if git pull --rebase --stat origin master
+if git fetch &> /dev/null
 then
-  printf '%s' "$GREEN"
-  printf '%s\n' '         __                                     __   '
-  printf '%s\n' '  ____  / /_     ____ ___  __  __   ____  _____/ /_  '
-  printf '%s\n' ' / __ \/ __ \   / __ `__ \/ / / /  /_  / / ___/ __ \ '
-  printf '%s\n' '/ /_/ / / / /  / / / / / / /_/ /    / /_(__  ) / / / '
-  printf '%s\n' '\____/_/ /_/  /_/ /_/ /_/\__, /    /___/____/_/ /_/  '
-  printf '%s\n' '                        /____/                       '
-  printf "${BLUE}%s\n" "Hooray! Oh My Zsh has been updated and/or is at the current version."
-  printf "${BLUE}${BOLD}%s${RESET}\n" "To keep up on the latest news and updates, follow us on twitter: https://twitter.com/ohmyzsh"
-  printf "${BLUE}${BOLD}%s${RESET}\n" "Get your Oh My Zsh swag at: https://shop.planetargon.com/collections/oh-my-zsh"
-else
-  printf "${RED}%s${RESET}\n" 'There was an error updating. Try again later?'
-fi
+	local=$(git rev-parse master)
+	remote=$(git rev-parse origin/master)
 
-# Unset git-config values set just for the upgrade
-case "$resetAutoStash" in
-  "") git config --unset rebase.autoStash ;;
-  *) git config rebase.autoStash "$resetAutoStash" ;;
-esac
+	if [[ $local != $remote ]]
+	then
+		git reset --hard origin/master
+
+    printf '%s' "$GREEN"
+    printf '%s\n' '         __                                     __   '
+    printf '%s\n' '  ____  / /_     ____ ___  __  __   ____  _____/ /_  '
+    printf '%s\n' ' / __ \/ __ \   / __ `__ \/ / / /  /_  / / ___/ __ \ '
+    printf '%s\n' '/ /_/ / / / /  / / / / / / /_/ /    / /_(__  ) / / / '
+    printf '%s\n' '\____/_/ /_/  /_/ /_/ /_/\__, /    /___/____/_/ /_/  '
+    printf '%s\n' '                        /____/                       '
+    printf "${BLUE}%s\n" "Hooray! Oh My Zsh has been updated and/or is at the current version."
+    printf "${BLUE}${BOLD}%s${RESET}\n" "To keep up on the latest news and updates, follow us on twitter: https://twitter.com/ohmyzsh"
+    printf "${BLUE}${BOLD}%s${RESET}\n" "Get your Oh My Zsh swag at: https://shop.planetargon.com/collections/oh-my-zsh"
+  fi
+fi
