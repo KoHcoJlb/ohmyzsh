@@ -56,7 +56,9 @@ if [[ "${terminfo[kcbt]}" != "" ]]; then
   bindkey "${terminfo[kcbt]}" reverse-menu-complete   # [Shift-Tab] - move through the completion menu backwards
 fi
 
-bindkey '^?' backward-delete-char                     # [Backspace] - delete backward
+bindkey '^H' backward-delete-char                     # [Backspace] - delete backward
+bindkey '^?' backward-delete-word                     # [Ctrl-Backspace] - delete word backward
+
 if [[ "${terminfo[kdch1]}" != "" ]]; then
   bindkey "${terminfo[kdch1]}" delete-char            # [Delete] - delete forward
 else
