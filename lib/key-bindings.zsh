@@ -80,9 +80,17 @@ function _sudo() {
   zle accept-line
 }
 zle -N _sudo
-bindkey "^\\" _sudo
+bindkey "^\\" _sudo                                   # [Ctrl-\] - run current command with sudo
 
-bindkey -s "^[c" "clear\n"                               # [Alt-c] - clear
+function _sudo_last_command() {
+  zle end-of-history
+  zle up-history
+  zle _sudo
+}
+zle -N _sudo_last_command
+bindkey "^[\\" _sudo_last_command                     # [Alt-\] - run last command with sudo
+
+bindkey -s "^[c" "clear\n"                            # [Alt-c] - clear
 
 # consider emacs keybindings:
 
