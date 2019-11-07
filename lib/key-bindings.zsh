@@ -82,6 +82,8 @@ function _sudo() {
 zle -N _sudo
 bindkey "^\\" _sudo
 
+bindkey -s "^[c" "clear\n"                               # [Alt-c] - clear
+
 # consider emacs keybindings:
 
 #bindkey -e  ## emacs key bindings
