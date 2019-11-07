@@ -55,11 +55,15 @@ else
 fi
 
 # Wrapper function for tmux.
+# shellcheck disable=SC2120
 function _zsh_tmux_plugin_run() {
   if [[ -n "$@" ]]; then
     command tmux "$@"
     return $?
   fi
+
+  # Fix Ctrl-Backspace
+  stty ek
 
   local -a tmux_cmd
   tmux_cmd=(command tmux)
