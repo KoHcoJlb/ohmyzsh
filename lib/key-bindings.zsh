@@ -75,6 +75,13 @@ bindkey '\C-x\C-e' edit-command-line
 # file rename magick
 bindkey "^[m" copy-prev-shell-word                    # [Alt-m] - copy previous word
 
+function _sudo() {
+  BUFFER="sudo $BUFFER"
+  zle accept-line
+}
+zle -N _sudo
+bindkey "^\\" _sudo
+
 # consider emacs keybindings:
 
 #bindkey -e  ## emacs key bindings
