@@ -60,7 +60,10 @@ ZSH_THEME="bira"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-ZSH_TMUX_AUTOSTART=true
+if [[ $TERM != screen ]]
+then
+    ZSH_TMUX_AUTOSTART=true
+fi
 
 # Which plugins would you like to load?
 # Standard plugins can be found in ~/.oh-my-zsh/plugins/*
