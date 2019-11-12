@@ -26,7 +26,7 @@ case ${HIST_STAMPS-} in
 esac
 
 ## History file configuration
-[ -z "$HISTFILE" ] && HISTFILE="$HOME/.zsh_history"
+[[ -z $SUDO_ZSH && -z "$HISTFILE" ]] && HISTFILE="$HOME/.zsh_history"
 HISTSIZE=50000
 SAVEHIST=10000
 
