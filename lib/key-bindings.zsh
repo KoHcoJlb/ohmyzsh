@@ -75,17 +75,17 @@ bindkey '\C-x\C-e' edit-command-line
 # file rename magick
 bindkey "^[m" copy-prev-shell-word                    # [Alt-m] - copy previous word
 
-function _sudo() {
+function _sudo_current_command() {
   BUFFER="sudo $BUFFER"
   zle accept-line
 }
-zle -N _sudo
-bindkey "^\\" _sudo                                   # [Ctrl-\] - run current command with sudo
+zle -N _sudo_current_command
+bindkey "^\\" _sudo_current_command                   # [Ctrl-\] - run current command with sudo
 
 function _sudo_last_command() {
   zle end-of-history
   zle up-history
-  zle _sudo
+  zle _sudo_current_command
 }
 zle -N _sudo_last_command
 bindkey "^[\\" _sudo_last_command                     # [Alt-\] - run last command with sudo
