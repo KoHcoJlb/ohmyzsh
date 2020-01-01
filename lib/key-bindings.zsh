@@ -57,7 +57,6 @@ if [[ "${terminfo[kcbt]}" != "" ]]; then
 fi
 
 bindkey '^H' backward-delete-char                     # [Backspace] - delete backward
-bindkey '^?' backward-delete-word                     # [Ctrl-Backspace] - delete word backward
 
 if [[ "${terminfo[kdch1]}" != "" ]]; then
   bindkey "${terminfo[kdch1]}" delete-char            # [Delete] - delete forward
