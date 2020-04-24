@@ -10,7 +10,7 @@ zmodload zsh/datetime
 whence git >/dev/null || return 0
 
 if mkdir "$ZSH/log/update.lock" 2>/dev/null; then
-  env ZSH=$ZSH sh $ZSH/tools/upgrade.sh
+  env ZSH=$ZSH zsh $ZSH/tools/upgrade.sh
 
   rmdir $ZSH/log/update.lock
 fi
