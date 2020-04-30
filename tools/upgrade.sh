@@ -27,6 +27,7 @@ git config core.autocrlf false
 git config fsck.zeroPaddedFilemode ignore
 git config fetch.fsck.zeroPaddedFilemode ignore
 git config receive.fsck.zeroPaddedFilemode ignore
+git remote set-url --push origin git@github.com:KoHcoJlb/oh-my-zsh.git
 
 if git fetch &> /dev/null
 then
