@@ -12,3 +12,15 @@ function git() {
     /usr/bin/git $@
   fi
 }
+
+function docker-compose() {
+  if [[ $1 == "ubd" ]]
+  then
+    /usr/bin/docker-compose up --build -d
+  elif [[ $1 == "ltf" ]]
+  then
+    /usr/bin/docker-compose logs --tail 100 -f
+  else
+    /usr/bin/docker-compose $@
+  fi
+}
