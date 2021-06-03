@@ -5,7 +5,7 @@
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="bira"
+ZSH_THEME="lukerandall"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -72,6 +72,9 @@ fi
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
+export ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(forward-char forward-word)
+export ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
 plugins=(git ssh-agent-forwarding tmux kubectl run-with-sudo zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
