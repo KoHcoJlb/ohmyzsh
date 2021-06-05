@@ -60,37 +60,15 @@ git config rebase.autoStash true
 local ret=0
 
 # Update Oh My Zsh
-printf "${BLUE}%s${RESET}\n" "Updating Oh My Zsh"
 last_commit=$(git rev-parse HEAD)
-if git pull --recurse-submodules yes --rebase --stat origin master; then
+if git pull --recurse-submodules --rebase --stat origin &> /dev/null; then
   # Check if it was really updated or not
-  if [[ "$(git rev-parse HEAD)" = "$last_commit" ]]; then
-    message="Oh My Zsh is already at the latest version."
-  else
-    message="Hooray! Oh My Zsh has been updated!"
+  if [[ "$(git rev-parse HEAD)" != "$last_commit" ]]; then
+    printf "${BLUE}${BOLD}Hooray! Oh My Zsh has been updated!"
 
     # Save the commit prior to updating
     git config oh-my-zsh.lastVersion "$last_commit"
-
-    # Display changelog with less if available, otherwise just print it to the terminal
-    if [[ "$1" = --interactive ]]; then
-      "$ZSH/tools/changelog.sh" HEAD "$last_commit"
-    fi
-
-    printf "${BLUE}%s \`${BOLD}%s${RESET}${BLUE}\`${RESET}\n" "You can see the changelog with" "omz changelog"
   fi
-
-  printf '%s         %s__      %s           %s        %s       %s     %s__   %s\n' $RAINBOW $RESET
-  printf '%s  ____  %s/ /_    %s ____ ___  %s__  __  %s ____  %s_____%s/ /_  %s\n' $RAINBOW $RESET
-  printf '%s / __ \%s/ __ \  %s / __ `__ \%s/ / / / %s /_  / %s/ ___/%s __ \ %s\n' $RAINBOW $RESET
-  printf '%s/ /_/ /%s / / / %s / / / / / /%s /_/ / %s   / /_%s(__  )%s / / / %s\n' $RAINBOW $RESET
-  printf '%s\____/%s_/ /_/ %s /_/ /_/ /_/%s\__, / %s   /___/%s____/%s_/ /_/  %s\n' $RAINBOW $RESET
-  printf '%s    %s        %s           %s /____/ %s       %s     %s          %s\n' $RAINBOW $RESET
-  printf '\n'
-  printf "${BLUE}%s${RESET}\n" "$message"
-  printf "${BLUE}${BOLD}%s ${UNDER}%s${RESET}\n" "To keep up with the latest news and updates, follow us on Twitter:" "https://twitter.com/ohmyzsh"
-  printf "${BLUE}${BOLD}%s ${UNDER}%s${RESET}\n" "Want to get involved in the community? Join our Discord:" "https://discord.gg/ohmyzsh"
-  printf "${BLUE}${BOLD}%s ${UNDER}%s${RESET}\n" "Get your Oh My Zsh swag at:" "https://shop.planetargon.com/collections/oh-my-zsh"
 else
   ret=$?
   printf "${RED}%s${RESET}\n" 'There was an error updating. Try again later?'
