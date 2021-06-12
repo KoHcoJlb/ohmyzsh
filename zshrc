@@ -67,6 +67,7 @@ then
     ZSH_TMUX_AUTOSTART=true
 fi
 ZSH_TMUX_CONFIG=$ZSH/config/tmux.conf
+ZSH_TMUX_FIXTERM=false
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
