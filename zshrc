@@ -64,7 +64,7 @@ DISABLE_MAGIC_FUNCTIONS=true
 
 if [[ $TERM != screen ]]
 then
-    ZSH_TMUX_AUTOSTART=true
+    ZSH_TMUX_AUTOSTART=false
 fi
 ZSH_TMUX_CONFIG=$ZSH/config/tmux.conf
 ZSH_TMUX_FIXTERM=false
