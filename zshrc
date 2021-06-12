@@ -66,6 +66,7 @@ if [[ $TERM != screen ]]
 then
     ZSH_TMUX_AUTOSTART=true
 fi
+ZSH_TMUX_CONFIG=$ZSH/tmux.conf
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
