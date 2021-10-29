@@ -210,6 +210,7 @@ setup_ohmyzsh() {
     -c receive.fsck.zeroPaddedFilemode=ignore \
     -c oh-my-zsh.remote=origin \
     -c oh-my-zsh.branch="$BRANCH" \
+    --recurse-submodules \
     --depth=1 --branch "$BRANCH" "$REMOTE" "$ZSH" || {
     fmt_error "git clone of oh-my-zsh repo failed"
     exit 1
