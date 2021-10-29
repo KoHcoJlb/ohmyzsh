@@ -164,9 +164,11 @@ last_commit=$(git rev-parse "$branch")
 
 # Update Oh My Zsh
 last_commit=$(git rev-parse HEAD)
-if git pull --recurse-submodules --rebase --stat origin &> /dev/null; then
+if git pull --rebase --stat origin &> /dev/null; then
   # Check if it was really updated or not
   if [[ "$(git rev-parse HEAD)" != "$last_commit" ]]; then
+    git submodule update --recursive
+
     printf "${BLUE}${BOLD}Hooray! Oh My Zsh has been updated!"
 
     # Save the commit prior to updating
