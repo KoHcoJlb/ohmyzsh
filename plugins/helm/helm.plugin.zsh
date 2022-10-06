@@ -9,5 +9,5 @@ if [[ ! -f "$ZSH_CACHE_DIR/completions/_helm" ]]; then
   source "$ZSH_CACHE_DIR/completions/_helm"
 else
   source "$ZSH_CACHE_DIR/completions/_helm"
-  helm completion zsh | tee "$ZSH_CACHE_DIR/completions/_helm" >/dev/null &|
+  helm completion zsh 2>/dev/null | tee "$ZSH_CACHE_DIR/completions/_helm" >/dev/null &|
 fi
