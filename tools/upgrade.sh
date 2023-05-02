@@ -233,10 +233,10 @@ if [[ $verbose_mode != silent ]]; then
 fi
 if LANG= git pull --quiet --rebase $remote $branch; then
   # Check if it was really updated or not
-  if [[ "$(git rev-parse HEAD)" != "$last_commit" ]]; then
-    git submodule update --recursive
-
-    printf "${BLUE}${BOLD}Hooray! Oh My Zsh has been updated!"
+  if [[ "$(git rev-parse HEAD)" = "$last_commit" ]]; then
+    message="Oh My Zsh is already at the latest version."
+  else
+    message="Hooray! Oh My Zsh has been updated!"
 
     # Save the commit prior to updating
     git config oh-my-zsh.lastVersion "$last_commit"
@@ -270,6 +270,15 @@ else
   ret=$?
   printf "${RED}%s${RESET}\n" 'There was an error updating. Try again later?'
 fi
+
+# go back to HEAD previous to update
+git checkout -q "$last_head" --
+
+# Unset git-config values set just for the upgrade
+case "$resetAutoStash" in
+  "") git config --unset rebase.autoStash ;;
+  *) git config rebase.autoStash "$resetAutoStash" ;;
+esac
 
 # Exit with `1` if the update failed
 exit $ret
