@@ -95,12 +95,119 @@ function update_last_updated_file() {
 }
 
 function update_ohmyzsh() {
-  if ZSH="$ZSH" zsh -f "$ZSH/tools/upgrade.sh" --interactive; then
+  zstyle -s ':omz:update' verbose verbose_mode || verbose_mode=default
+  if ZSH="$ZSH" zsh -f "$ZSH/tools/upgrade.sh" -i -v $verbose_mode; then
     update_last_updated_file
   fi
 }
 
-update_ohmyzsh
+function has_typed_input() {
+  # Created by Philippe Troin <phil@fifi.org>
+  # https://zsh.org/mla/users/2022/msg00062.html
+  emulate -L zsh
+  zmodload zsh/zselect
+
+  # Back up stty settings prior to disabling canonical mode
+  # Consider that no input can be typed if stty fails
+  # (this might happen if stdin is not a terminal)
+  local termios
+  termios=$(stty --save 2>/dev/null) || return 1
+  {
+    # Disable canonical mode so that typed input counts
+    # regardless of whether Enter was pressed
+    stty -icanon
+
+    # Poll stdin (fd 0) for data ready to be read
+    zselect -t 0 -r 0
+    return $?
+  } always {
+    # Restore stty settings
+    stty $termios
+  }
+}
+
+() {
+  emulate -L zsh
+
+  local epoch_target mtime option LAST_EPOCH
+
+  # Remove lock directory if older than a day
+  zmodload zsh/datetime
+  zmodload -F zsh/stat b:zstat
+  if mtime=$(zstat +mtime "$ZSH/log/update.lock" 2>/dev/null); then
+    if (( (mtime + 3600 * 24) < EPOCHSECONDS )); then
+      command rm -rf "$ZSH/log/update.lock"
+    fi
+  fi
+
+  # Check for lock directory
+  if ! command mkdir "$ZSH/log/update.lock" 2>/dev/null; then
+    return
+  fi
+
+  # Remove lock directory on exit. `return $ret` is important for when trapping a SIGINT:
+  #  The return status from the function is handled specially. If it is zero, the signal is
+  #  assumed to have been handled, and execution continues normally. Otherwise, the shell
+  #  will behave as interrupted except that the return status of the trap is retained.
+  #  This means that for a CTRL+C, the trap needs to return the same exit status so that
+  #  the shell actually exits what it's running.
+  trap "
+    ret=\$?
+    unset update_mode
+    unset -f current_epoch is_update_available update_last_updated_file update_ohmyzsh 2>/dev/null
+    command rm -rf '$ZSH/log/update.lock'
+    return \$ret
+  " EXIT INT QUIT
+
+  # Create or update .zsh-update file if missing or malformed
+  if ! source "${ZSH_CACHE_DIR}/.zsh-update" 2>/dev/null || [[ -z "$LAST_EPOCH" ]]; then
+    update_last_updated_file
+    return
+  fi
+
+  # Number of days before trying to update again
+  zstyle -s ':omz:update' frequency epoch_target || epoch_target=${UPDATE_ZSH_DAYS:-13}
+  # Test if enough time has passed until the next update
+  if (( ( $(current_epoch) - $LAST_EPOCH ) < $epoch_target )); then
+    return
+  fi
+
+  # Test if Oh My Zsh directory is a git repository
+  if ! (builtin cd -q "$ZSH" && LANG= git rev-parse &>/dev/null); then
+    echo >&2 "[oh-my-zsh] Can't update: not a git repository."
+    return
+  fi
+
+  # Check if there are updates available before proceeding
+  if ! is_update_available; then
+    update_last_updated_file
+    return
+  fi
+
+  # If in reminder mode or user has typed input, show reminder and exit
+  if [[ "$update_mode" = reminder ]] || has_typed_input; then
+    printf '\r\e[0K' # move cursor to first column and clear whole line
+    echo "[oh-my-zsh] It's time to update! You can do that by running \`omz update\`"
+    return 0
+  fi
+
+  # Don't ask for confirmation before updating if in auto mode
+  if [[ "$update_mode" = auto ]]; then
+    update_ohmyzsh
+    return $?
+  fi
+
+  # Ask for confirmation and only update on 'y', 'Y' or Enter
+  # Otherwise just show a reminder for how to update
+  echo -n "[oh-my-zsh] Would you like to update? [Y/n] "
+  read -r -k 1 option
+  [[ "$option" = $'\n' ]] || echo
+  case "$option" in
+    [yY$'\n']) update_ohmyzsh ;;
+    [nN]) update_last_updated_file ;&
+    *) echo "[oh-my-zsh] You can update manually by running \`omz update\`" ;;
+  esac
+}
 
 unset update_mode
 unset -f current_epoch is_update_available update_last_updated_file update_ohmyzsh

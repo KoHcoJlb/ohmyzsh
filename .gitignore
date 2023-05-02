@@ -9,6 +9,4 @@ log/
 
 # editor configs
 .vscode
-
-.idea/
-*.iml
+.idea
