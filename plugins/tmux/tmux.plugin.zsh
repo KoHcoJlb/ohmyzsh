@@ -76,25 +76,15 @@ function _zsh_tmux_plugin_run() {
   [[ "$ZSH_TMUX_ITERM2" == "true" ]] && tmux_cmd+=(-CC)
   [[ "$ZSH_TMUX_UNICODE" == "true" ]] && tmux_cmd+=(-u)
 
-  # Try to connect to an existing session.
-  if [[ -n "$ZSH_TMUX_DEFAULT_SESSION_NAME" ]]; then
-    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach -t $ZSH_TMUX_DEFAULT_SESSION_NAME -d
-  else
-    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach -d
+  if [[ "$ZSH_TMUX_FIXTERM" == "true" ]]; then
+    tmux_cmd+=(-f "$_ZSH_TMUX_FIXED_CONFIG")
+  elif [[ -e "$ZSH_TMUX_CONFIG" ]]; then
+    tmux_cmd+=(-f "$ZSH_TMUX_CONFIG")
   fi
-
-  # If failed, just run tmux, fixing the TERM variable if requested.
-  if [[ $? -ne 0 ]]; then
-    if [[ "$ZSH_TMUX_FIXTERM" == "true" ]]; then
-      tmux_cmd+=(-f "$_ZSH_TMUX_FIXED_CONFIG")
-    elif [[ -e "$ZSH_TMUX_CONFIG" ]]; then
-      tmux_cmd+=(-f "$ZSH_TMUX_CONFIG")
-    fi
-    if [[ -n "$ZSH_TMUX_DEFAULT_SESSION_NAME" ]]; then
-      $tmux_cmd new-session -s $ZSH_TMUX_DEFAULT_SESSION_NAME
-    else
-      $tmux_cmd new-session
-    fi
+  if [[ -n "$ZSH_TMUX_DEFAULT_SESSION_NAME" ]]; then
+    $tmux_cmd new-session -s $ZSH_TMUX_DEFAULT_SESSION_NAME -A -D
+  else
+    $tmux_cmd new-session -A -D
   fi
 
   if [[ "$ZSH_TMUX_AUTOQUIT" == "true" ]]; then
