@@ -7,9 +7,9 @@ function sudo-zsh() {
 function git() {
   if [[ $1 == "fpull" ]]
   then
-    /usr/bin/git fetch && /usr/bin/git reset --hard $(git rev-parse --abbrev-ref --symbolic-full-name @{u})
+    /usr/bin/env git fetch && /usr/bin/git reset --hard $(git rev-parse --abbrev-ref --symbolic-full-name @{u})
   else
-    /usr/bin/git $@
+    /usr/bin/env git $@
   fi
 }
 
