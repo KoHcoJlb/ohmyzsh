@@ -75,7 +75,7 @@ fi
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
 export ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(forward-char forward-word)
 export ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
-plugins=(git ssh-agent-forwarding tmux kubectl run-with-sudo zsh-autosuggestions kubectl helm)
+plugins=(git ssh-agent-forwarding tmux kubectl zsh-autosuggestions kubectl helm)
 
 source $ZSH/oh-my-zsh.sh
 
