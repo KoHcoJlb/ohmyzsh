@@ -7,6 +7,8 @@
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="lukerandall"
 
+zstyle ":omz:update" mode disabled
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -62,11 +64,6 @@ DISABLE_MAGIC_FUNCTIONS=true
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-if [[ $TERM != screen ]]
-then
-    ZSH_TMUX_AUTOSTART=true
-fi
-
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
@@ -75,7 +72,7 @@ fi
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
 export ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(forward-char forward-word)
 export ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
-plugins=(git ssh-agent-forwarding tmux kubectl zsh-autosuggestions kubectl helm)
+plugins=(git ssh-agent-forwarding kubectl zsh-autosuggestions kubectl helm)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -106,3 +103,20 @@ export EDITOR="nano"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+function chezmoi_update {
+  if ! chezmoi update; then
+    tmux rename-window -t :chezmoi "!ERROR! chezmoi update"
+    read -s
+  fi
+}
+
+if [[ -z "$TMUX" && $TERM != screen ]]
+then
+    tmux new-session -s shell -d 2> /dev/null
+    if ! tmux list-windows -F "#W" | grep chezmoi > /dev/null; then
+      tmux new-window -t shell: -d -n "chezmoi update" "zsh -ic chezmoi_update"
+    fi
+    tmux attach-session -t shell -d
+    exit
+fi
