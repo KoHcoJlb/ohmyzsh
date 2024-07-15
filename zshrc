@@ -69,10 +69,14 @@ DISABLE_MAGIC_FUNCTIONS=true
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
-export ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(forward-char forward-word)
-export ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
-plugins=(git ssh-agent-forwarding kubectl zsh-autosuggestions kubectl helm)
+plugins=(git ssh-agent-forwarding kubectl helm)
+
+if [[ -z "$ZSH_DISABLE_AUTOSUGGESTIONS" ]]; then
+  export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
+  export ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(forward-char forward-word)
+  export ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
+  plugins+=(zsh-autosuggestions)
+fi
 
 source $ZSH/oh-my-zsh.sh
 
@@ -111,7 +115,7 @@ function chezmoi_update {
   fi
 }
 
-if [[ -z "$TMUX" && $TERM != screen ]]
+if [[ -z "$SKIP_TMUX" && -z "$TMUX" && $TERM != screen ]]
 then
     tmux new-session -s shell -d 2> /dev/null
     if ! tmux list-windows -F "#W" | grep chezmoi > /dev/null; then
