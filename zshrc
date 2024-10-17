@@ -5,7 +5,7 @@
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="lukerandall"
+ZSH_THEME="my-theme"
 
 zstyle ":omz:update" mode disabled
 
@@ -123,6 +123,6 @@ then
     if ! tmux list-windows -F "#W" | grep chezmoi > /dev/null; then
       tmux new-window -t shell: -d -n "chezmoi update" "zsh -ic chezmoi_update"
     fi
-    tmux attach-session -t shell -d
+    tmux attach-session -t shell
     exit
 fi
