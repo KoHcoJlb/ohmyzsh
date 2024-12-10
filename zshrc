@@ -69,7 +69,7 @@ DISABLE_MAGIC_FUNCTIONS=true
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git ssh-agent-forwarding kubectl helm)
+plugins=(git ssh-agent-forwarding kubectl helm rust)
 
 if [[ -z "$ZSH_DISABLE_AUTOSUGGESTIONS" ]]; then
   export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
