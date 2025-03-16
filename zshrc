@@ -123,6 +123,12 @@ then
     if ! tmux list-windows -F "#W" | grep chezmoi > /dev/null; then
       tmux new-window -t shell: -d -n "chezmoi update" "zsh -ic chezmoi_update"
     fi
-    tmux attach-session -t shell
+
+    if [[ -n $TMUX_SESSION_NAME ]]; then
+      tmux new-session -t shell -A -s shell-client-$TMUX_SESSION_NAME
+    else
+      tmux attach-session -t shell
+    fi
+
     exit
 fi
