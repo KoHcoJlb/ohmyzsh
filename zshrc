@@ -64,6 +64,22 @@ DISABLE_MAGIC_FUNCTIONS=true
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+if [[ -z "$SKIP_TMUX" && -z "$TMUX" && $TERM != screen ]]
+then
+    tmux new-session -s shell -d 2> /dev/null
+    if ! tmux list-windows -F "#W" | grep chezmoi > /dev/null; then
+      tmux new-window -t shell: -d -n "chezmoi update" "zsh -ic chezmoi_update"
+    fi
+
+    if [[ -n $TMUX_SESSION_NAME ]]; then
+      tmux new-session -t shell -A -s shell-client-$TMUX_SESSION_NAME
+    else
+      tmux attach-session -t shell
+    fi
+
+    exit
+fi
+
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
@@ -116,19 +132,3 @@ function chezmoi_update {
     read -s
   fi
 }
-
-if [[ -z "$SKIP_TMUX" && -z "$TMUX" && $TERM != screen ]]
-then
-    tmux new-session -s shell -d 2> /dev/null
-    if ! tmux list-windows -F "#W" | grep chezmoi > /dev/null; then
-      tmux new-window -t shell: -d -n "chezmoi update" "zsh -ic chezmoi_update"
-    fi
-
-    if [[ -n $TMUX_SESSION_NAME ]]; then
-      tmux new-session -t shell -A -s shell-client-$TMUX_SESSION_NAME
-    else
-      tmux attach-session -t shell
-    fi
-
-    exit
-fi
