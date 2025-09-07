@@ -64,6 +64,18 @@ DISABLE_MAGIC_FUNCTIONS=true
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+
+auth_sock_path=${ZSH_SSH_AGENT_SOCK:-$(cd;pwd)/.ssh/auth_sock}
+mkdir -p $(dirname $auth_sock_path)
+
+if [[ -n $SSH_AUTH_SOCK && $SSH_AUTH_SOCK != $auth_sock_path ]]
+then
+    ln -sf $SSH_AUTH_SOCK $auth_sock_path
+fi
+
+export SSH_AUTH_SOCK=$auth_sock_path
+
+
 if [[ -z "$SKIP_TMUX" && -z "$TMUX" && $TERM != screen ]]
 then
     tmux new-session -s shell -d 2> /dev/null
@@ -85,7 +97,7 @@ fi
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git ssh-agent-forwarding kubectl helm rust)
+plugins=(git kubectl helm rust)
 
 if [[ -z "$ZSH_DISABLE_AUTOSUGGESTIONS" ]]; then
   export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
