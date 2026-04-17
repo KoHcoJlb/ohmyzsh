@@ -139,8 +139,24 @@ zstyle ':completion:*' use-ip yes
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 function chezmoi_update {
-  if ! chezmoi update; then
-    tmux rename-window -t :chezmoi "!ERROR! chezmoi update"
+  function do_update {
+    setopt local_options err_return
+
+    cd ~/.local/share/chezmoi
+    
+    git fetch
+
+    PREV=$(git rev-parse HEAD)
+    git reset --hard origin/master
+    git -P diff --stat $PREV HEAD
+
+    git submodule update --recursive
+
+    chezmoi apply
+  }
+
+  if ! (do_update); then
+    tmux rename-window "!ERROR! chezmoi update"
     read -s
   fi
 }
