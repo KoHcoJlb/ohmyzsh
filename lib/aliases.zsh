@@ -1,4 +1,4 @@
-alias cp="rsync -Phhrvl"
+alias cp="rsync --progress -hhrvl"
 
 function sudo-zsh() {
   sudo $@ ZDOTDIR=$HOME SUDO_ZSH=1 zsh
