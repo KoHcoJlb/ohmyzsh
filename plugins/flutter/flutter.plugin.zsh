@@ -1,16 +1,20 @@
 alias fl="flutter"
+alias fla="flutter analyze"
 alias flattach="flutter attach"
 alias flb="flutter build"
-alias flchnl="flutter channel"
 alias flc="flutter clean"
-alias fldvcs="flutter devices"
+alias flchnl="flutter channel"
 alias fldoc="flutter doctor"
-alias flpub="flutter pub"
+alias fldvcs="flutter devices"
 alias flget="flutter pub get"
+alias fll="flutter logs"
+alias flpu="flutter pub upgrade"
+alias flpub="flutter pub"
 alias flr="flutter run"
 alias flrd="flutter run --debug"
 alias flrp="flutter run --profile"
 alias flrr="flutter run --release"
+alias flt="flutter test"
 alias flupgrd="flutter upgrade"
 
 # COMPLETION FUNCTION
@@ -26,4 +30,4 @@ if [[ ! -f "$ZSH_CACHE_DIR/completions/_flutter" ]]; then
   _comps[flutter]=_flutter
 fi
 
-flutter zsh-completion >| "$ZSH_CACHE_DIR/completions/_flutter" &|
+flutter zsh-completion < /dev/null >| "$ZSH_CACHE_DIR/completions/_flutter" &|
