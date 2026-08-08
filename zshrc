@@ -99,13 +99,6 @@ fi
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git kubectl helm rust)
 
-if [[ -z "$ZSH_DISABLE_AUTOSUGGESTIONS" ]]; then
-  export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080,underline"
-  export ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(forward-char forward-word)
-  export ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
-  plugins+=(zsh-autosuggestions)
-fi
-
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -160,3 +153,18 @@ function chezmoi_update {
     read -s
   fi
 }
+
+if (( $+commands[atuin] )); then
+  atuin_state_dir="${XDG_DATA_HOME:-$HOME/.local/share}/atuin"
+  atuin_import_marker="$atuin_state_dir/zsh-history-imported"
+
+  if [[ ! -e "$atuin_import_marker" ]]; then
+    mkdir -p "$atuin_state_dir"
+
+    if atuin import zsh; then
+      touch "$atuin_import_marker"
+    fi
+  fi
+
+  eval "$(atuin init zsh)"
+fi
