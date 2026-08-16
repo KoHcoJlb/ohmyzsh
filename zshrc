@@ -97,7 +97,7 @@ fi
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git kubectl helm rust)
+plugins=(git kubectl helm podman rust)
 
 source $ZSH/oh-my-zsh.sh
 
