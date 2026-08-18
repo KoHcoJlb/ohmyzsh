@@ -166,7 +166,7 @@ if (( $+commands[atuin] )); then
       if [[ ! -e "$atuin_import_marker" ]]; then
         mkdir -p "$atuin_state_dir"
 
-        if atuin import zsh; then
+        if [[ ! -e "$zsh_history_file" ]] || atuin import zsh; then
           touch "$atuin_import_marker"
           rm -f -- "$zsh_history_file"
         fi
