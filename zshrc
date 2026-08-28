@@ -156,21 +156,30 @@ function chezmoi_update {
 
 if (( $+commands[atuin] )); then
   function {
-    local atuin_init atuin_state_dir atuin_import_marker zsh_history_file
+    local atuin_init atuin_state_dir atuin_import_marker atuin_import_lock atuin_import_lock_fd zsh_history_file
 
     if atuin_init="$(atuin init zsh)" && eval "$atuin_init"; then
       atuin_state_dir="${XDG_DATA_HOME:-$HOME/.local/share}/atuin"
       atuin_import_marker="$atuin_state_dir/zsh-history-imported"
+      atuin_import_lock="$atuin_state_dir/zsh-history-import.lock"
       zsh_history_file="${HISTFILE:-$HOME/.zsh_history}"
 
       if [[ ! -e "$atuin_import_marker" ]]; then
         mkdir -p "$atuin_state_dir"
 
-        if [[ ! -e "$zsh_history_file" ]] || atuin import zsh; then
-          touch "$atuin_import_marker"
-          rm -f -- "$zsh_history_file"
+        if touch "$atuin_import_lock" &&
+          zmodload zsh/system &&
+          zsystem flock -f atuin_import_lock_fd "$atuin_import_lock"; then
+          if [[ ! -e "$atuin_import_marker" ]] &&
+            { [[ ! -e "$zsh_history_file" ]] || atuin import zsh; }; then
+            touch "$atuin_import_marker"
+          fi
+
+          zsystem flock -u "$atuin_import_lock_fd"
         fi
-      else
+      fi
+
+      if [[ -e "$atuin_import_marker" ]]; then
         rm -f -- "$zsh_history_file"
       fi
 
