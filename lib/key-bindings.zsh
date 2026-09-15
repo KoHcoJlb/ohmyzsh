@@ -101,14 +101,64 @@ bindkey -M emacs '^[[3;5~' kill-word
 bindkey -M viins '^[[3;5~' kill-word
 bindkey -M vicmd '^[[3;5~' kill-word
 
-# [Ctrl-RightArrow] - move forward one word
-bindkey -M emacs '^[[1;5C' forward-word
-bindkey -M viins '^[[1;5C' forward-word
-bindkey -M vicmd '^[[1;5C' forward-word
-# [Ctrl-LeftArrow] - move backward one word
-bindkey -M emacs '^[[1;5D' backward-word
-bindkey -M viins '^[[1;5D' backward-word
-bindkey -M vicmd '^[[1;5D' backward-word
+# [Ctrl-LeftArrow/RightArrow] - unbound in the shell
+bindkey -M emacs -r '^[[1;5D' '^[[1;5C'
+bindkey -M viins -r '^[[1;5D' '^[[1;5C'
+bindkey -M vicmd -r '^[[1;5D' '^[[1;5C'
+
+autoload -Uz match-words-by-style
+
+function backward-word-end() {
+  emulate -L zsh
+  local curcontext=":zle:$WIDGET"
+  local -A matched_words
+  local -i count=${NUMERIC:-1}
+
+  if (( count < 0 )); then
+    zle .emacs-forward-word -n $((-count))
+    return
+  fi
+
+  repeat $count; do
+    match-words-by-style
+
+    # Cross the current word if the cursor is inside it or at its end.
+    if [[ -z ${matched_words[ws-before-cursor]} ]]; then
+      (( CURSOR -= ${#matched_words[word-before-cursor]} ))
+      match-words-by-style
+    fi
+
+    # Cross separators to the previous word's end, or the start of the line.
+    if [[ -n ${matched_words[word-before-cursor]} ]]; then
+      (( CURSOR -= ${#matched_words[ws-before-cursor]} ))
+    else
+      CURSOR=0
+    fi
+  done
+
+  return 0
+}
+
+zle -N backward-word-end
+
+# [Option-LeftArrow/RightArrow] - move between word ends
+function {
+  local keymap
+
+  for keymap in emacs viins vicmd; do
+    # macOS terminal word-motion sequences.
+    bindkey -M "$keymap" '^[b' backward-word-end
+    bindkey -M "$keymap" '^[f' emacs-forward-word
+
+    # Alt-modified arrow sequences.
+    bindkey -M "$keymap" '^[[1;3D' backward-word-end
+    bindkey -M "$keymap" '^[[1;3C' emacs-forward-word
+
+    # Meta-b/Meta-f encoded with tmux's extended CSI-u keys.
+    bindkey -M "$keymap" '^[[98;3u' backward-word-end
+    bindkey -M "$keymap" '^[[102;3u' emacs-forward-word
+  done
+}
 
 
 bindkey '\ew' kill-region                             # [Esc-w] - Kill from the cursor to the mark
