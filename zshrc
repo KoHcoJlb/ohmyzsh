@@ -158,8 +158,11 @@ function chezmoi_update {
   }
 
   if ! (do_update); then
-    tmux rename-window -t "$TMUX_PANE" "!ERROR! chezmoi update"
-    read -s
+    if [[ -n "$TMUX_PANE" ]]; then
+      tmux rename-window -t "$TMUX_PANE" "!ERROR! chezmoi update"
+      read -s
+    fi
+    return 1
   fi
 }
 
