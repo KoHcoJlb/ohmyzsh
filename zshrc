@@ -134,18 +134,27 @@ zstyle ':completion:*' use-ip yes
 function chezmoi_update {
   function do_update {
     setopt local_options err_return
+    local update_lock_fd
 
     cd ~/.local/share/chezmoi
-    
-    git fetch
 
-    PREV=$(git rev-parse HEAD)
-    git reset --hard origin/master
-    git -P diff --stat $PREV HEAD
+    zmodload zsh/system || return
+    touch .git/chezmoi-update.lock || return
+    zsystem flock -t 0 -f update_lock_fd .git/chezmoi-update.lock 2>/dev/null || return 0
 
-    git submodule update --recursive
+    {
+      git fetch
 
-    chezmoi apply
+      PREV=$(git rev-parse HEAD)
+      git reset --hard origin/master
+      git -P diff --stat $PREV HEAD
+
+      git submodule update --recursive
+
+      chezmoi apply
+    } always {
+      zsystem flock -u "$update_lock_fd"
+    }
   }
 
   if ! (do_update); then
