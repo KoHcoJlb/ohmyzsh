@@ -80,7 +80,7 @@ if [[ -z "$SKIP_TMUX" && -z "$TMUX" && $TERM != screen ]]
 then
     tmux new-session -s shell -d 2> /dev/null
     if ! tmux list-windows -F "#W" | grep chezmoi > /dev/null; then
-      tmux new-window -t shell: -d -n "chezmoi update" "zsh -ic chezmoi_update"
+      tmux new-window -t shell: -d -n "chezmoi update" zsh "$HOME/.local/share/chezmoi/update.zsh"
     fi
 
     if [[ -n $TMUX_SESSION_NAME ]]; then
@@ -130,41 +130,6 @@ zstyle ':completion:*' use-ip yes
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-function chezmoi_update {
-  function do_update {
-    setopt local_options err_return
-    local update_lock_fd
-
-    cd ~/.local/share/chezmoi
-
-    zmodload zsh/system || return
-    touch .git/chezmoi-update.lock || return
-    zsystem flock -t 0 -f update_lock_fd .git/chezmoi-update.lock 2>/dev/null || return 0
-
-    {
-      git fetch
-
-      PREV=$(git rev-parse HEAD)
-      git reset --hard origin/master
-      git -P diff --stat $PREV HEAD
-
-      git submodule update --recursive
-
-      chezmoi apply
-    } always {
-      zsystem flock -u "$update_lock_fd"
-    }
-  }
-
-  if ! (do_update); then
-    if [[ -n "$TMUX_PANE" ]]; then
-      tmux rename-window -t "$TMUX_PANE" "!ERROR! chezmoi update"
-      read -s
-    fi
-    return 1
-  fi
-}
 
 if (( $+commands[atuin] )); then
   function {
